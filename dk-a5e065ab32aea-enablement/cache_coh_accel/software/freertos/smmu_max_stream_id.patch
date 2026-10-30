@@ -1,0 +1,11 @@
+--- a/drivers/smmu/socfpga_smmu.h
++++ b/drivers/smmu/socfpga_smmu.h
+@@ -74,7 +74,7 @@
+ #ifndef __SOCFPGA_SMMU__
+ #define __SOCFPGA_SMMU__
+ 
+-#define SMMU_MAX_STREAM_ID    0xAU
++#define SMMU_MAX_STREAM_ID    0x20U
+ 
+ #define SMMU_STREAM_ID_TSN0     0x1
+ #define SMMU_STREAM_ID_TSN1     0x2

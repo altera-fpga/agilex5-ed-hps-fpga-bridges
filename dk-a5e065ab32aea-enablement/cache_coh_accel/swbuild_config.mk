@@ -1,0 +1,7 @@
+# Recursive SW build entrypoints for per-project makefiles.
+
+# Define the list of software projects to build
+SW_PROJECT_LIST += \
+hps_debug \
+freertos_app_qspi \
+yocto_linux_qspi

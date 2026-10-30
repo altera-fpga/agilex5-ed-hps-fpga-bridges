@@ -1,0 +1,60 @@
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (C) 2026, Altera Corporation
+ *
+ * Device tree for the Cache Coherent Accelerator (CCA) subsystem.
+ * Matched by driver compatible = "altr,cache-coh-accel-1.0".
+ *
+ * HARDWARE OVERVIEW:
+ *   The CCA subsystem (cache_coh_accel_subsys.qsys) exposes six MMIO regions:
+ *
+ *     reg-name           Size   Description
+ *     -----------------  -----  ------------------------------------------
+ *     cca-csr            256 B  Accelerator control/status/ID registers
+ *     msgdma-wr-pref      32 B  FPGA2HPS (ST2MM) DMA prefetcher CSR
+ *     msgdma-rd-pref      32 B  HPS2FPGA (MM2ST) DMA prefetcher CSR
+ *     desc-ocm             4 KB Shared descriptor OCM pool (both channels)
+ *     msgdma-wr-disp      32 B  FPGA→HPS DMA dispatcher CSR
+ *     msgdma-rd-disp      32 B  HPS→FPGA DMA dispatcher CSR
+ */
+/dts-v1/;
+#include "socfpga_agilex5_socdk_a0.dts"
+
+/ {
+	soc@0 {
+		cca: cache-coh-accel@20400000 {
+			compatible = "altr,cache-coh-accel-1.0";
+
+			reg = <0x20400000 0x100>,	/* cca-csr:        Accelerator CSR block (256 B)    */
+			      <0x20204000 0x20>,	/* msgdma-wr-pref: WR (ST2MM) prefetcher CSR (32 B) */
+			      <0x20204020 0x20>,	/* msgdma-rd-pref: RD (MM2ST) prefetcher CSR (32 B) */
+			      <0x20200000 0x1000>,	/* desc-ocm:       Shared descriptor OCM (4 KB)     */
+			      <0x20204040 0x20>,	/* msgdma-wr-disp: WR dispatcher CSR (32 B)         */
+			      <0x20204060 0x20>;	/* msgdma-rd-disp: RD dispatcher CSR (32 B)         */
+
+			reg-names = "cca-csr", "msgdma-wr-pref", "msgdma-rd-pref",
+				    "desc-ocm", "msgdma-wr-disp", "msgdma-rd-disp";
+
+			/*
+			 * WR channel (ST2MM) completion IRQ.
+			 *
+			 * SPI 17 = GIC intid 49 = FPGA2HPS_INTERRUPT0 = f2h_irq0_in[0]
+			 */
+			interrupts = <0 17 4>;
+
+			/*
+			 * Hardware-view OCM descriptor base addresses.
+			 * The prefetcher fetches descriptors using these
+			 * physical fabric addresses.
+			 */
+			altr,rd-desc-hw-addr = /bits/ 64 <0x20200000>;
+			altr,wr-desc-hw-addr = /bits/ 64 <0x20200800>;
+
+			iommus = <&smmu 0xF>;
+
+			dma-coherent;
+
+			status = "okay";
+		};
+	};
+};
